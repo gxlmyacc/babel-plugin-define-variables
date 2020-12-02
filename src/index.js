@@ -1,20 +1,40 @@
 
 const {
   getConstCache,
-  var2Expression
+  var2Expression,
+  expr2str,
+  getPackage
 } = require('./utils');
 
 module.exports = function ({ types: t }) {
   function IdentifierVisitor(path, { opts, cache }) {
-    const parent = path.parent;
+    let parent = path.parent;
     if (!parent) return;
     if (['FunctionDeclaration', 'ClassMethod', 'ObjectMethod'].includes(parent.type)) return;
     if (parent.type === 'ObjectProperty' && parent.key === path.node) return;
-    if (parent.type === 'MemberExpression' && parent.object !== path.node) return;
     if (parent.type === 'VariableDeclarator' && parent.id === path.node) return;
 
+    let identifier = expr2str(path.node);
+    if (parent.type === 'MemberExpression') {
+      let parentPath = path.parentPath;
+      while (parentPath && parentPath.node.type === 'MemberExpression') {
+        if (path.node === parentPath.node.property) identifier = `${expr2str(parentPath.node.object)}.${identifier}`;
+        path = parentPath;
+        parentPath = parentPath.parentPath;
+      }
+    } else if (parent.type === 'CallExpression' && expr2str(parent.callee) === identifier) {
+      if (identifier !== '__packageversion' 
+        || !parent.arguments.length 
+        || !t.isStringLiteral(parent.arguments[0])) return;
+      path = path.parentPath;
+      let packageName = expr2str(path.node.arguments[0]);
+      let packagePath = packageName && require.resolve(packageName);
+      let pkg = getPackage(packagePath);
+      path.replaceWith(t.stringLiteral(pkg ? pkg.version : ''));
+      return;
+    }
+
     const defines = (opts && opts.defines) || {};
-    const identifier = path.node.name;
     if (identifier === '__filename') {
       path.replaceWith(t.stringLiteral(cache.filename));
     } else if (identifier === '__dirname') {

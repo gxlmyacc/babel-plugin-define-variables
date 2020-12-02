@@ -30,7 +30,7 @@ module.exports = {
     [
       path.resolve('./src/index.js'), {
         defines: {
-          aa: 1
+          'process.env.BUILD_ENV': 'test'
         }
       }
     ],

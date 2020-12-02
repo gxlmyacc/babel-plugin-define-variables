@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-define-variables",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "a babel define vars that like webpack.DefinePlugin",
   "keywords": [
     "babel",
