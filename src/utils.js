@@ -211,6 +211,38 @@ function getPackage(filename) {
   if (configPath) return require(configPath);
 }
 
+const _toString = Object.prototype.toString;
+
+function isPlainObject(obj) {
+  return _toString.call(obj) === '[object Object]';
+}
+
+function mergeObject(target) {
+  function _mergeObject(target, source, copiedObjects) {
+    if (!target) return target;
+    if (!isPlainObject(source)) return target;
+    copiedObjects.push({ source, target });
+    Object.keys(source).forEach(key => {
+      let v = source[key];
+      if (isPlainObject(v)) {
+        let copied = copiedObjects.find(c => c.target === v);
+        if (copied) target[key] = copied.target;
+        else {
+          let w = target[key];
+          if (!isPlainObject(w)) w = target[key] = {};
+          _mergeObject(w, v, copiedObjects);
+        }
+      } else target[key] = v;
+    });
+    return target;
+  }
+
+  let ret = target;
+  let copiedObjects = [];
+  for (let i = 1; i < arguments.length; i++) _mergeObject(ret, arguments[i], copiedObjects);
+  return ret;
+}
+
 
 module.exports = {
   getConstCache,
@@ -219,5 +251,6 @@ module.exports = {
   obj2Expression,
   expr2str,
   getConfigPath,
-  getPackage
+  getPackage,
+  mergeObject
 };

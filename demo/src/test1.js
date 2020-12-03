@@ -1,13 +1,15 @@
 function test() {
-  console.log('__filename', __filename);
-  console.log('__dirname', __dirname);
-  console.log('__now', __now);
-  console.log('__timestamp', __timestamp);
-  console.log('__packagename', __packagename);
-  console.log('__packageversion', __packageversion);
-  console.log('__packageversion', __packageversion(''));
-  console.log('__packageversion', __packageversion('@babel/cli'));
+  console.log('__filename__', __filename__);
+  console.log('__filehash__', __filehash__);
+  console.log('__dirname__', __dirname__);
+  console.log('__now__', __now__);
+  console.log('__timestamp__', __timestamp__);
+  console.log('__packagename__', __packagename__);
+  console.log('__packageversion__', __packageversion__);
+  console.log('__packageversion__', __packageversion__(''));
+  console.log('__packageversion__', __packageversion__('@babel/cli'));
   console.log('process.env.BUILD_ENV', process.env.BUILD_ENV);
+  __packageversion__.split('.');
 }
 
 

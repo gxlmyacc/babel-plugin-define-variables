@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-define-variables",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "a babel define vars that like webpack.DefinePlugin",
   "keywords": [
     "babel",
@@ -27,9 +27,9 @@
   },
   "author": "gxlmyacc",
   "dependencies": {
+    "hash-sum": "^2.0.0"
   },
-  "peerDependencies": {
-  },
+  "peerDependencies": {},
   "devDependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.5.4",
