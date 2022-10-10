@@ -50,7 +50,7 @@ module.exports = {
 
 - __filehash__
   
-  the filename of code file
+  the file`s hashcode of code file
 
 - __dirname__
 
