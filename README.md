@@ -1,6 +1,8 @@
 # babel-plugin-define-variables
 a babel plugin that like webpack.DefinePlugin
 
+[![NPM version](https://img.shields.io/npm/v/babel-plugin-define-variables.svg?style=flat)](https://npmjs.com/package/babel-plugin-define-variables)
+[![NPM downloads](https://img.shields.io/npm/dm/babel-plugin-define-variables.svg?style=flat)](https://npmjs.com/package/babel-plugin-define-variables)
 ## installtion
 
 ```bash
