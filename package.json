@@ -1,21 +1,30 @@
 {
   "name": "babel-plugin-define-variables",
-  "version": "0.0.3",
-  "description": "a babel define vars that like webpack.DefinePlugin",
+  "version": "0.0.4",
+  "description": "一个类似 webpack.DefinePlugin 的 Babel 插件，用于在编译时定义全局变量和常量",
   "keywords": [
     "babel",
     "plugin",
-    "define"
+    "define",
+    "variables",
+    "constants",
+    "environment",
+    "build-time",
+    "webpack-define",
+    "chinese",
+    "中文"
   ],
   "sideEffects": false,
   "main": "esm/index.js",
   "module": "esm/index.js",
+  "typings": "types/index.d.ts",
   "engines": {
     "node": "> 6.9.1"
   },
   "files": [
     "src",
-    "esm"
+    "esm",
+    "types"
   ],
   "scripts": {
     "build": "babel src -d esm",

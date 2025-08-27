@@ -244,6 +244,17 @@ function mergeObject(target) {
 }
 
 
+const _hasOwnProperty = Object.prototype.hasOwnProperty;
+
+/**
+ * @param {object} obj
+ * @param {string} key
+ * @returns {boolean}
+ */
+function hasOwnProp(obj, key) {
+  return Boolean(obj) && _hasOwnProperty.call(obj, key);
+}
+
 module.exports = {
   getConstCache,
   var2Expression,
@@ -252,5 +263,6 @@ module.exports = {
   expr2str,
   getConfigPath,
   getPackage,
-  mergeObject
+  mergeObject,
+  hasOwnProp
 };

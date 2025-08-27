@@ -5,7 +5,8 @@ const {
   var2Expression,
   expr2str,
   getPackage,
-  mergeObject
+  mergeObject,
+  hasOwnProp
 } = require('./utils');
 
 function createHash(filename, pkg) {
@@ -42,8 +43,8 @@ module.exports = function ({ types: t }) {
         parentPath = parentPath.parentPath;
       }
     } else if (parent.type === 'CallExpression' && expr2str(parent.callee) === identifier) {
-      if (identifier !== '__packageversion__' 
-        || !parent.arguments.length 
+      if (identifier !== '__packageversion__'
+        || !parent.arguments.length
         || !t.isStringLiteral(parent.arguments[0])) return;
       path = path.parentPath;
       let packageName = expr2str(path.node.arguments[0]);
@@ -64,7 +65,7 @@ module.exports = function ({ types: t }) {
       path.replaceWith(t.numericLiteral(Date.now()));
     } else if (options.builtIns.filehash && identifier === '__filehash__') {
       path.replaceWith(t.stringLiteral(createHash(cache.filename, cache.pkg)));
-    }  else if (defines[identifier] !== undefined) {
+    }  else if (hasOwnProp(defines, identifier)) {
       path.replaceWith(var2Expression(defines[identifier]));
     } else if (cache.pkg) {
       if (options.builtIns.packagename && identifier === '__packagename__') {

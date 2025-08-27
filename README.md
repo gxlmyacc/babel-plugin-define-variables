@@ -1,24 +1,43 @@
 # babel-plugin-define-variables
-a babel plugin that like webpack.DefinePlugin
+
+A Babel plugin that works like webpack.DefinePlugin for defining global variables and constants at compile time.
 
 [![NPM version](https://img.shields.io/npm/v/babel-plugin-define-variables.svg?style=flat)](https://npmjs.com/package/babel-plugin-define-variables)
 [![NPM downloads](https://img.shields.io/npm/dm/babel-plugin-define-variables.svg?style=flat)](https://npmjs.com/package/babel-plugin-define-variables)
-## installtion
+
+## 🌍 Language
+
+- [English](README.md) (Current)
+- [中文](README_CN.md)
+
+## 📖 Introduction
+
+`babel-plugin-define-variables` is a powerful Babel plugin that allows you to define global variables and constants at compile time, similar to webpack's DefinePlugin. This plugin is particularly useful for:
+
+- Injecting environment variables at build time
+- Defining build-time constant values
+- Getting file information (filename, path, hash, etc.)
+- Getting package information and version numbers
+- Injecting timestamps and build times
+
+## 🚀 Installation
 
 ```bash
-  npm install --save-dev babel-plugin-define-variables
-  // or 
-  yarn add -D babel-plugin-define-variables
+npm install --save-dev babel-plugin-define-variables
+# or
+yarn add -D babel-plugin-define-variables
 ```
 
-## config
+## ⚙️ Configuration
 
+### Basic Configuration
 
+#### Minimal Configuration (All Built-ins Enabled)
 ```js
 // babel.config.js
 module.exports = {
   presets: [
-    ...
+    '@babel/preset-env'
   ],
   plugins: [
     [
@@ -27,61 +46,210 @@ module.exports = {
         defines: {
           'process.env.BUILD_ENV': process.env.BUILD_ENV,
           'process.env.NODE_ENV': process.env.NODE_ENV,
-        },
-        builtIns: {
-          // filename: false,
-          // filehash: false,
-          // dirname: false,
-          // now: false,
-          // timestamp: false,
-          // packagename: false,
-          // packageversion: false
+          'VERSION': '1.0.0',
+          'IS_PRODUCTION': process.env.NODE_ENV === 'production'
         }
+        // builtIns not specified - all variables enabled by default
       }
-    ],
-   ...
+    ]
   ]
 };
 ```
 
-## built-in define
+#### Explicit Configuration (Same as Minimal)
+```js
+// babel.config.js
+module.exports = {
+  presets: [
+    '@babel/preset-env'
+  ],
+  plugins: [
+    [
+      'babel-plugin-define-variables',
+      {
+        defines: {
+          'process.env.BUILD_ENV': process.env.BUILD_ENV,
+          'process.env.NODE_ENV': process.env.NODE_ENV,
+          'VERSION': '1.0.0',
+          'IS_PRODUCTION': process.env.NODE_ENV === 'production'
+        },
+        builtIns: {
+          filename: true,      // Enable __filename__ (default)
+          filehash: true,      // Enable __filehash__ (default)
+          dirname: true,       // Enable __dirname__ (default)
+          now: true,           // Enable __now__ (default)
+          timestamp: true,     // Enable __timestamp__ (default)
+          packagename: true,   // Enable __packagename__ (default)
+          packageversion: true // Enable __packageversion__ (default)
+        }
+      }
+    ]
+  ]
+};
+```
 
-- __filename__
+### Configuration Options
 
-  the filename of code file that relative of `package.json` path that current project.
+#### `defines` Object
+Used to define custom global variables, supports the following value types:
+- String
+- Number
+- Boolean
+- Object (will be serialized to JSON string)
 
-- __filehash__
-  
-  the file`s hashcode of code file
+#### `builtIns` Object
+Controls the enable/disable state of built-in variables. **All built-in variables are enabled by default**. If you want to disable any of them, you need to explicitly set them to `false`.
 
-- __dirname__
+**Important Notes:**
+- You don't need to specify `builtIns` if you want all variables enabled (default behavior)
+- Only specify the variables you want to disable by setting them to `false`
+- Unspecified variables will remain enabled
 
-  the dirname of code file that relative of `package.json` path that current project.
+| Option | Default | Description |
+|--------|---------|-------------|
+| `filename` | `true` | Whether to enable `__filename__` variable |
+| `filehash` | `true` | Whether to enable `__filehash__` variable |
+| `dirname` | `true` | Whether to enable `__dirname__` variable |
+| `now` | `true` | Whether to enable `__now__` variable |
+| `timestamp` | `true` | Whether to enable `__timestamp__` variable |
+| `packagename` | `true` | Whether to enable `__packagename__` variable |
+| `packageversion` | `true` | Whether to enable `__packageversion__` variable |
 
-- __now__
+**Example of disabling specific built-ins:**
+```js
+{
+  builtIns: {
+    filename: false,    // Disable __filename__
+    filehash: false,   // Disable __filehash__
+    now: false         // Disable __now__
+    // Other variables remain enabled by default
+  }
+}
+```
 
-  the time that build moment. format: 'yyyy-MM-dd hh:mm:ss'
+## 🔧 Built-in Variables
 
-- __timestamp__
+### File Information Variables
 
-  the timestamp that build moment.
+#### `__filename__`
+The file path of the current code file relative to the project root directory (where `package.json` is located).
 
-- __packagename__
+**Example:**
+```js
+console.log(__filename__); // Output: "/src/components/Button.js"
+```
 
-  the package name of this project.
+#### `__dirname__`
+The directory path of the current code file relative to the project root directory.
 
-- __packageversion__
+**Example:**
+```js
+console.log(__dirname__); // Output: "/src/components"
+```
 
-    the package version of this project. you can also use like this:
+#### `__filehash__`
+The hash value of the current code file, generated based on the filename.
 
-  ```js
-  __packageversion__('react');
-  ```
-  that you will get version of react;
+**Example:**
+```js
+console.log(__filehash__); // Output: "d7bfcc4a"
+```
 
-## demo
+### Time-related Variables
 
-src/index.js:
+#### `__now__`
+The time at build moment, formatted as `'yyyy-MM-dd hh:mm:ss'`.
+
+**Example:**
+```js
+console.log(__now__); // Output: "2024-01-15 14:30:25"
+```
+
+#### `__timestamp__`
+The timestamp at build moment (milliseconds).
+
+**Example:**
+```js
+console.log(__timestamp__); // Output: 1705312225000
+```
+
+### Package Information Variables
+
+#### `__packagename__`
+The package name of the current project.
+
+**Example:**
+```js
+console.log(__packagename__); // Output: "babel-plugin-define-variables"
+```
+
+#### `__packageversion__`
+The package version of the current project, or the version of a specified package.
+
+**Usage:**
+```js
+// Get current project version
+console.log(__packageversion__); // Output: "0.0.4"
+
+// Get version of specified package
+console.log(__packageversion__('react')); // Output: "18.2.0"
+console.log(__packageversion__('@babel/core')); // Output: "7.5.4"
+```
+
+## 💡 Use Cases
+
+### 1. Environment Variable Injection
+```js
+// Configuration
+{
+  defines: {
+    'process.env.API_URL': process.env.API_URL || 'http://localhost:3000',
+    'process.env.DEBUG': process.env.DEBUG || false
+  }
+}
+
+// Usage
+if (process.env.DEBUG) {
+  console.log('API URL:', process.env.API_URL);
+}
+```
+
+### 2. Build Information Injection
+```js
+// Configuration
+{
+  defines: {
+    'BUILD_TIME': new Date().toISOString(),
+    'GIT_COMMIT': process.env.GIT_COMMIT || 'unknown'
+  }
+}
+
+// Usage
+console.log('Build time:', BUILD_TIME);
+console.log('Git commit:', GIT_COMMIT);
+```
+
+### 3. File Path Processing
+```js
+// Using built-in variables
+const configPath = __dirname__ + '/config.json';
+const fileHash = __filehash__;
+```
+
+### 4. Version Information Management
+```js
+// Check version
+if (__packageversion__('react').startsWith('18.')) {
+  console.log('Using React 18');
+}
+
+// Display build information
+console.log(`Building ${__packagename__} v${__packageversion__} at ${__now__}`);
+```
+
+## 📝 Complete Example
+
+### Source Code (src/index.js)
 
 ```js
 function test() {
@@ -97,9 +265,11 @@ function test() {
   console.log('process.env.BUILD_ENV', process.env.BUILD_ENV);
   __packageversion__.split('.');
 }
+
+export default test;
 ```
 
-output/index.js:
+### Compiled Output
 
 ```js
 function test() {
@@ -116,3 +286,24 @@ function test() {
   "0.0.2".split('.');
 }
 ```
+
+## 🔍 Notes
+
+1. **Performance**: Built-in variables are calculated at compile time and won't affect runtime performance
+2. **File Paths**: File path variables are calculated based on the project root directory (where `package.json` is located)
+3. **Version Retrieval**: `__packageversion__('packageName')` will try to resolve the version of the specified package, returning an empty string if the package doesn't exist
+4. **Time Variables**: `__now__` and `__timestamp__` are generated at each build, not calculated at runtime
+
+## 🤝 Contributing
+
+Issues and Pull Requests are welcome!
+
+## 📄 License
+
+MIT License
+
+## 🔗 Related Links
+
+- [Babel](https://babeljs.io/)
+- [webpack DefinePlugin](https://webpack.js.org/plugins/define-plugin/)
+- [hash-sum](https://github.com/bevacqua/hash-sum)
